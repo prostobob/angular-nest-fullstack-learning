@@ -45,7 +45,9 @@
 - [ ] `backend-node/` — `src/server.ts`, `src/db.ts` (knex instance), `src/middlewares/`, `src/routes/`
 - [x] Docker установлен и работает: `brew install colima docker docker-compose` + `colima start`,
       `docker ps` и `docker compose version` подтверждены (2026-09-17)
-- [ ] Docker Compose с Postgres (общий для обоих треков) — ещё не заведён
+- [x] Docker Compose с Postgres (общий для обоих треков) — `docker-compose.yml` в корне,
+      контейнер `proj-postgres` поднят и здоров (`docker compose ps` → `Up (healthy)`,
+      `pg_isready` отвечает) (2026-09-17)
 
 ### 1.2 Инфраструктура (всё руками, без магии фреймворка)
 
