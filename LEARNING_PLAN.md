@@ -49,13 +49,19 @@
       контейнер `proj-postgres` поднят и здоров (`docker compose ps` → `Up (healthy)`,
       `pg_isready` отвечает) (2026-09-17)
 
-### 1.2 Инфраструктура (всё руками, без магии фреймворка)
+### 1.2 Инфраструктура (всё руками, без магии фреймворка) — ЗАКРЫТ
 
-- [ ] JSON body parser (`express.json()`)
-- [ ] Самописный request-логгер
-- [ ] Auth middleware: заголовок `Authorization: Token <jwt>` — **важно**: у RealWorld схема `Token`, не `Bearer`
-- [ ] Централизованный error handler `(err, req, res, next)` → формат ошибок `{"errors": {"body": [...]}}`
-- [ ] `validate(schema)` — фабрика middleware на `zod`, вешается на каждый роут вручную
+- [x] JSON body parser (`express.json()`)
+- [x] Самописный request-логгер (`src/middlewares/logger.ts`, лог на `res.on('finish')`)
+- [x] Auth middleware: заголовок `Authorization: Token <jwt>` — **важно**: у RealWorld схема `Token`, не `Bearer`
+      (`src/middlewares/auth.ts`, навешивается точечно на роуты, не глобально — иначе ломает 404
+      для незащищённых путей)
+- [x] Централизованный error handler `(err, req, res, next)` → формат ошибок `{"errors": {"body": [...]}}`
+      (`ApiError` в `src/errors/api-error.ts` несёт `statusCode` + `errors: string[]`, 404-хендлер
+      и error handler в `server.ts`)
+- [x] `validate(schema)` — фабрика middleware на `zod`, вешается на каждый роут вручную
+      (`src/middlewares/validate.ts`, `safeParse` → 422 с массивом сообщений при невалидных данных,
+      проверено smoke-тестом: невалидный body → 422 с сообщениями от Zod, валидный → проходит дальше)
 
 ### 1.3 БД (Knex-миграции)
 
