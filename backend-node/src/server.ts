@@ -24,19 +24,18 @@ app.get('/whoami', checkAuth, (req: express.Request, res: express.Response) => {
 });
 
 app.use((req, res, next: NextFunction) => {
-  const err = new ApiError(404, 'Not found');
+  const err = new ApiError(404, ['Not found']);
   next(err);
 });
 
 app.use((err: Error, req: express.Request, res: express.Response, next: NextFunction) => {
-  const statusErr = err instanceof ApiError ? err.statusCode : 500;
   console.error(err.stack);
 
-  res.status(statusErr).json({
-    errors: {
-      body: [err.message],
-    },
-  });
+  if (err instanceof ApiError) {
+    return res.status(err.statusCode).json({ errors: { body: err.errors } });
+  }
+
+  res.status(500).json({ errors: { body: ['Internal server error'] } });
 });
 
 app.listen(port, () => console.log(`listening on ${port}`));
