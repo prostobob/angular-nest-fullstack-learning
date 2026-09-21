@@ -1,9 +1,13 @@
 import 'dotenv/config';
 import express from 'express';
 import { db } from './db.js';
+import { logger } from './middlewares/logger.js';
 
 const app = express();
 const port = process.env.PORT ?? 3000;
+
+app.use(logger);
+app.use(express.json());
 
 app.get('/health', (req: express.Request, res: express.Response) => res.json({ status: 'OK' }));
 
