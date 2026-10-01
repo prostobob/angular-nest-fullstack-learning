@@ -48,4 +48,9 @@ export async function seed(knex) {
     { user_id: bob.id, article_id: popular.id },
     { user_id: carol.id, article_id: popular.id },
   ]);
+
+  await knex('follows').insert([
+    { follower_id: carol.id, followed_id: alice.id },
+    { follower_id: alice.id, followed_id: bob.id },
+  ]);
 }

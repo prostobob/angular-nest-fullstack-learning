@@ -63,14 +63,18 @@
       (`src/middlewares/validate.ts`, `safeParse` → 422 с массивом сообщений при невалидных данных,
       проверено smoke-тестом: невалидный body → 422 с сообщениями от Zod, валидный → проходит дальше)
 
-### 1.3 БД (Knex-миграции)
+### 1.3 БД (Knex-миграции) — ЗАКРЫТ
 
 - [x] Таблицы: `users`, `articles`, `tags`, `article_tags`, `comments`, `favorites` (M2M user↔article),
       `follows` (self-M2M user↔user) — все миграции в `src/migrations/`, проверены `migrate`/
       `migrate:rollback`/`migrate` round-trip и живыми constraint'ами в Postgres (уникальность,
       композитные PK на join-таблицах, FK с осмысленным `onDelete`)
-- [ ] Джойны/агрегации (`favoritesCount`, `tagList`, `following`) пишутся руками через query builder
-      — будет по ходу написания роутов в 1.4
+- [x] Джойны/агрегации (`favoritesCount`, `tagList`, `following`) пишутся руками через query builder
+      — отработано в `src/playground.ts` на dev-сиде (`bun run seed`): `favoritesCount` —
+      коррелированный подзапрос + `::int` (pg отдаёт `bigint` строкой), `tagList` — `LEFT JOIN` +
+      `COALESCE(array_agg(...) FILTER (...), '{}')`, `following` — `EXISTS` с параметром и явной
+      веткой для анонима. Два независимых JOIN размножают строки → `DISTINCT` не лечит, только маскирует.
+      В сервис статей переедет в 1.4
 
 ### 1.4 Роуты — по порядку зависимостей, сверяясь с `openapi.yml`
 
